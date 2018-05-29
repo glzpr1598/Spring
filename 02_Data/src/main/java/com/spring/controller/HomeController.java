@@ -1,8 +1,6 @@
 package com.spring.controller;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,5 +31,50 @@ public class HomeController {
 		return "list";
 	}
 	
+	// 글쓰기 화면으로 이동
+	@RequestMapping(value = "/writeForm")
+	public String writeForm() {
+		logger.info("글쓰기 폼 요청");
+		return "writeForm";
+	}
+	
+	// 글쓰기
+	@RequestMapping(value = "/write")
+	public String wirte(HttpServletRequest request, Model model) {
+		logger.info("글쓰기 요청");
+		inter = new CrudService();
+		// model에 request를 담아서 보냄.
+		model.addAttribute("request", request);
+		inter.write(model);
+		return "redirect:/";
+	}
+	
+	// 상세보기
+	@RequestMapping(value = "/contentView")
+	public String contentView(HttpServletRequest request, Model model) {
+		logger.info("상세보기 요청");
+		inter = new CrudService();
+		
+		model.addAttribute("request", request);
+		inter.contentView(model);
+		
+		return "contentView";
+	}
+	
+	// 수정 폼
+	@RequestMapping(value = "/modifyForm")
+	public String modifyForm(HttpServletRequest request, Model model) {
+		logger.info("수정 폼 요청");
+		inter = new CrudService();
+		
+		model.addAttribute("request", request);
+		inter.modifyForm(model);
+		
+		return "modifyForm";
+	}
+	
+	// 수정
+	
+	// 삭제
 	
 }

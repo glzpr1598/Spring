@@ -13,6 +13,9 @@ public interface CrudInter {
 	// 상세보기
 	public void contentView(Model model);
 	
+	// 수정 폼
+	public void modifyForm(Model model);
+	
 	// 수정
 	public void modify(Model model);
 	
