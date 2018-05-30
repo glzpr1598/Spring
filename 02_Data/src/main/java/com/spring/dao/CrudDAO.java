@@ -74,7 +74,7 @@ public class CrudDAO {
 
 	public int write(CrudDTO dto) {
 		int success = 0;
-		String sql = "insert into bbs(idx, user_name, subject, content, bHit)"
+		String sql = "insert into bbs(idx, user_name, subject, content, bHit) "
 				+ "values(bbs_seq.NEXTVAL, ?, ?, ?, 0)";
 		
 		try {
@@ -91,13 +91,15 @@ public class CrudDAO {
 		return success;
 	}
 
-	public CrudDTO contentView(int id) {
+	public CrudDTO contentView(int idx) {
 		CrudDTO dto = new CrudDTO();
 		String sql = "select * from bbs where idx=?";
+		String sql2 = "update bbs set bHit=bHit+1 where idx=?";
 		
 		try {
+			// 조회
 			ps = conn.prepareStatement(sql);
-			ps.setInt(1, id);
+			ps.setInt(1, idx);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				logger.info("글 조회 성공");
@@ -110,6 +112,10 @@ public class CrudDAO {
 			} else {
 				logger.info("글 조회 실패");
 			}
+			// 조회수
+			ps = conn.prepareStatement(sql2);
+			ps.setInt(1, idx);
+			ps.executeUpdate();
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -117,6 +123,42 @@ public class CrudDAO {
 		}
 		
 		return dto;
+	}
+
+	public int modify(CrudDTO dto) {
+		int success = 0;
+		String sql = "update bbs set user_name=?, subject=?, content=? "
+				+ "where idx=?";
+		
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, dto.getUser_name());
+			ps.setString(2, dto.getSubject());
+			ps.setString(3, dto.getContent());
+			ps.setInt(4, dto.getIdx());
+			success = ps.executeUpdate();
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			resClose();
+		}
+		return success;
+	}
+
+	public int delete(int idx) {
+		int success = 0;
+		String sql = "delete from bbs where idx=?";
+		
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, idx);
+			success = ps.executeUpdate();
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			resClose();
+		}
+		return success;
 	}
 
 }

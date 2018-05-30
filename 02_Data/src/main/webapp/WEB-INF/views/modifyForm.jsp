@@ -30,7 +30,7 @@
 </style>
 </head>
 <body>
-	<form action="update" method="post">
+	<form action="modify" method="post">
 	<table>
 		<tr>
 			<th>작성자</th>
@@ -51,7 +51,7 @@
 		</tr>
 		<tr>
 			<td colspan="2">
-				<a href="./detail?id=${dto.idx}">취소</a>
+				<a href="./contentView?idx=${dto.idx}">취소</a>
 				&nbsp;&nbsp;
 				<button>저장</button>
 			</td>

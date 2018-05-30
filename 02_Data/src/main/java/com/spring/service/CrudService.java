@@ -44,7 +44,8 @@ public class CrudService implements CrudInter {
 		// DAO로 전달(글쓰기)
 		CrudDAO dao = new CrudDAO();
 		int success = dao.write(dto);
-		if (success != 0) {
+		
+		if (success > 0) {
 			logger.info("글쓰기 성공");
 		} else {
 			logger.info("글쓰기 실패");
@@ -56,10 +57,10 @@ public class CrudService implements CrudInter {
 		Map<String, Object> map = model.asMap();
 		HttpServletRequest request = (HttpServletRequest) map.get("request");
 		
-		int id = Integer.parseInt(request.getParameter("id"));
+		int idx = Integer.parseInt(request.getParameter("idx"));
 		
 		CrudDAO dao = new CrudDAO();
-		CrudDTO dto = dao.contentView(id);
+		CrudDTO dto = dao.contentView(idx);
 		model.addAttribute("dto", dto);
 	}
 	
@@ -77,12 +78,45 @@ public class CrudService implements CrudInter {
 
 	@Override
 	public void modify(Model model) {
-
+		Map<String, Object> map = model.asMap();
+		HttpServletRequest request = (HttpServletRequest) map.get("request");
+		
+		int idx = Integer.parseInt(request.getParameter("idx"));
+		String userName = request.getParameter("userName");
+		String subject = request.getParameter("subject");
+		String content = request.getParameter("content");
+		
+		CrudDTO dto = new CrudDTO();
+		dto.setIdx(idx);
+		dto.setUser_name(userName);
+		dto.setSubject(subject);
+		dto.setContent(content);
+		
+		CrudDAO dao = new CrudDAO();
+		int success = dao.modify(dto);
+		
+		if (success > 0) {
+			logger.info("수정 성공");
+		} else {
+			logger.info("수정 실패");
+		}
 	}
 
 	@Override
 	public void delete(Model model) {
-
+		Map<String, Object> map = model.asMap();
+		HttpServletRequest request = (HttpServletRequest) map.get("request");
+		
+		int idx = Integer.parseInt(request.getParameter("idx"));
+		
+		CrudDAO dao = new CrudDAO();
+		int success = dao.delete(idx);
+		
+		if (success > 0) {
+			logger.info("삭제 성공");
+		} else {
+			logger.info("삭제 실패");
+		}
 	}
 
 }

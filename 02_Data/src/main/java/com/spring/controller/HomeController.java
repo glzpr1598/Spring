@@ -74,7 +74,27 @@ public class HomeController {
 	}
 	
 	// 수정
+	@RequestMapping(value = "/modify")
+	public String modify(HttpServletRequest request, Model model) {
+		logger.info("수정 요청");
+		inter = new CrudService();
+		
+		model.addAttribute("request", request);
+		inter.modify(model);
+		
+		return "redirect:/";
+	}
 	
 	// 삭제
+	@RequestMapping(value = "/delete")
+	public String delete(HttpServletRequest request, Model model) {
+		logger.info("삭제 요청");
+		inter = new CrudService();
+		
+		model.addAttribute("request", request);
+		inter.delete(model);
+		
+		return "redirect:/";
+	}
 	
 }
