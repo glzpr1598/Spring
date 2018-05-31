@@ -14,30 +14,47 @@
 		border-collapse: collapse;
 		padding: 5px 10px;
 	}
+	a {
+		color: black;
+		text-decoration: none;
+	}
+	a:hover {
+		font-weight: bold;
+	}
+	#container {
+		width: 600px;
+		margin: 0px auto;
+	}
+	table {
+		width: 600px;
+		text-align: center;
+	}
 </style>
 </head>
 <body>
-	<button onclick="location.href='writeForm'">글쓰기</button>
-	<table>
-		<tr>
-			<th>글번호</th>
-			<th>제목</th>
-			<th>작성자</th>
-			<th>작성일</th>
-			<th>조회수</th>
-			<th>삭제</th>
-		</tr>
-		<c:forEach items="${list}" var="item">
+	<div id="container">
+		<button id="btnWrite" onclick="location.href='writeForm'">글쓰기</button>
+		<table>
 			<tr>
-			<td>${item.idx}</td>
-			<td><a href="contentView?idx=${item.idx}">${item.subject}</a></td>
-			<td>${item.user_name}</td>
-			<td>${item.reg_date}</td>
-			<td>${item.bHit}</td>
-			<td><a href="delete?idx=${item.idx}">삭제</a></td>
+				<th>글번호</th>
+				<th>제목</th>
+				<th>작성자</th>
+				<th>작성일</th>
+				<th>조회수</th>
+				<th>삭제</th>
 			</tr>
-		</c:forEach>
-	</table>
+			<c:forEach items="${list}" var="item">
+				<tr>
+				<td>${item.idx}</td>
+				<td><a href="detail?idx=${item.idx}">${item.subject}</a></td>
+				<td>${item.user_name}</td>
+				<td>${item.reg_date}</td>
+				<td>${item.bHit}</td>
+				<td><a href="delete?idx=${item.idx}">삭제</a></td>
+				</tr>
+			</c:forEach>
+		</table>
+	</div>
 </body>
 <script>
 	msg = ${msg};
