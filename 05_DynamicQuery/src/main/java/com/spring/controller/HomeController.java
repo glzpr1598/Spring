@@ -1,15 +1,18 @@
 package com.spring.controller;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.spring.service.JoinService;
 
 /**
  * Handles requests for the application home page.
@@ -17,23 +20,50 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class HomeController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	/**
-	 * Simply selects the home view to render by returning its name.
-	 */
+	// service를 빈으로 사용
+	@Autowired
+	JoinService service;
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
+	public String home(Model model) {
+		logger.info("회원가입 페이지 요청");
+		return "joinForm";
+	}
+	
+	@RequestMapping(value = "/join", method = RequestMethod.POST)
+	public ModelAndView join(@RequestParam HashMap<String, String> map) {
+		logger.info("회원가입 요청");
+		logger.info("id : " + map.get("user_id"));
+		logger.info("pw : " + map.get("user_pw"));
+		logger.info("name : " + map.get("user_name"));
+		logger.info("age : " + map.get("user_age"));
+		logger.info("gender : " + map.get("user_gender"));
+		logger.info("email : " + map.get("user_email"));
 		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+		return service.join(map);
+	}
+	
+	@RequestMapping(value = "/result")
+	public String result() {
+		return "result";
+	}
+	
+	@RequestMapping(value = "/list")
+	public ModelAndView list(@RequestParam HashMap<String, String> map) {
+		logger.info("리스트 요청");
+		logger.info("opt : " + map.get("opt"));
+		logger.info("keyword : " + map.get("keyword"));
 		
-		String formattedDate = dateFormat.format(date);
+		return service.list(map);
+	}
+	
+	@RequestMapping(value = "/update")
+	public ModelAndView update(@RequestParam HashMap<String, String> map) {
+		logger.info("수정 요청");
 		
-		model.addAttribute("serverTime", formattedDate );
-		
-		return "home";
+		return service.update(map);
 	}
 	
 }

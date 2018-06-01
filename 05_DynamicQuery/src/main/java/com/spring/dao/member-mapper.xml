@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">    
+<mapper namespace="com.spring.dao.MemberInter">
+
+	<insert id="join" parameterType="MemberDTO">
+		INSERT INTO member(id, pw, name, age, gender, email)
+		<if test="!email.equals('')">
+			VALUES(#{id}, #{pw}, #{name}, #{age}, #{gender}, #{email})
+		</if>
+		<if test="email.equals('')">
+			VALUES(#{id}, #{pw}, #{name}, #{age}, #{gender}, '없음')
+		</if>
+	</insert>
+	
+	<!-- LIKE 작성법
+	[Oracle] LIKE '%'||#{keyword}||'%'
+	[MySQL] LIKE CONCAT('%', #{keyword}, '%')
+	[MSSQL] LIKE '%'+#{keyword}+'%'
+	-->
+	<select id="list" parameterType="HashMap" resultType="MemberDTO">
+		SELECT * FROM member
+		<where>
+			<if test="opt == 'id'">
+				id LIKE '%'||#{keyword}||'%'
+			</if>
+			<if test="opt == 'name'">
+				name LIKE '%'||#{keyword}||'%'
+			</if>
+			<if test="opt == 'email'">
+				email LIKE '%'||#{keyword}||'%'
+			</if>
+		</where>
+	</select>
+	
+	<update id="update" parameterType="HashMap">
+		UPDATE member
+		<set>
+			<if test="pw != ''">pw = #{pw},</if>
+			<if test="name != ''">name = #{name},</if>
+			<if test="email != ''">email = #{email}</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
