@@ -22,7 +22,10 @@
 	</beans:bean>
 	
 	<context:component-scan base-package="com.rest.controller" />
+	<context:component-scan base-package="com.rest.service" />
 	
+	<!-- MyBatis 설정 import -->
+	<beans:import resource="classpath:config/mybatis.xml" />
 	
 	
 </beans:beans>

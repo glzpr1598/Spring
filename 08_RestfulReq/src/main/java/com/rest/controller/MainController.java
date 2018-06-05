@@ -4,16 +4,22 @@ import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.rest.service.AjaxService;
+
 @RestController
 public class MainController {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	AjaxService service;
 	
 	@RequestMapping(value = "/")
 	public HashMap<String, String> home() {
@@ -44,17 +50,14 @@ public class MainController {
 	/* /list?cnt=20&page=1 형식 */
 	@RequestMapping(value = "/list")
 	public HashMap<String, Object> list(@RequestParam HashMap<String, String> params) {
-		HashMap<String, Object> map = new HashMap<>();
-		
 		String page = params.get("page");
 		String cntPerPage = params.get("cntPerPage");
 		
 		logger.info(page);
 		logger.info(cntPerPage);
 		
-		map.put("page", page);
-		map.put("cntPerPage", cntPerPage);
-		
+		HashMap<String, Object> map = service.pagingList(Integer.parseInt(page), Integer.parseInt(cntPerPage)); 
+
 		return map;
 	}
 	
