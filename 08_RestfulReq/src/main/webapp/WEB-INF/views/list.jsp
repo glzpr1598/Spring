@@ -6,10 +6,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
-<link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<!-- <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"> -->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script> 
-<script src="resources/js/jquery.twbsPagination.js" type="text/javascript"></script>
+<!-- <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>  -->
+<script src="resources/js/zer0boxPaging.js" type="text/javascript"></script>
 <style>
 	table,th,td{
 		border: 1px solid black;
@@ -62,11 +62,14 @@
 			<tbody id="tbody1">
 			</tbody>
 		</table>
-		<div class="container">
+		<div id="paging">
+			<div id="container"></div>
+		</div>
+<!-- 		<div class="container">
 		    <nav aria-label="Page navigation">
 		        <ul class="pagination" id="pagination"></ul>
 		    </nav>
-		</div>
+		</div> -->
 	</div>
 </body>
 <script>
@@ -81,14 +84,32 @@
 	});
 
 	function listCall(page) {
+		// data로 데이터 전송
+		/*
 		obj.url = "./list";
 		obj.type = "get";
 		obj.data = {"page": page, "cntPerPage": $("#numPerPage").val()};
+		*/
+		// url로 데이터 전송
+		obj.url = "./listSub/" + $("#numPerPage").val() + "/" + page;
+		obj.type = "get";
+		
 		obj.success = function(data) {
 			console.log(data);
 			listPrint(data.list);
 			//pagePrint(data.curPage, data.totalPage);
 			
+			// 페이징 플러그인
+			$("#paging").zer0boxPaging({
+                viewRange : 5,
+                currPage : data.curPage,
+                maxPage : data.totalPage,
+                clickAction : function(e){
+                    listCall($(this).attr('page'));
+                }
+            });
+			
+			/* 
 			// 페이징 플러그인
 			window.pagObj = $('#pagination').twbsPagination({
 				totalPages: data.totalPage,
@@ -99,7 +120,7 @@
 				}
 			}).on('page', function (event, page) {
 
-			});
+			}); */
 		}
 		ajaxCall(obj);
 	}
@@ -127,6 +148,7 @@
 		$("#tbody1").html(content);
 	}
 	
+	/* 
 	// 페이지 출력
 	function pagePrint(curPage, totalPage) {
 		var content = "";
@@ -163,6 +185,6 @@
 		}
 		$("#paging").html(content);
 	}
-	
+	 */
 </script>
 </html>

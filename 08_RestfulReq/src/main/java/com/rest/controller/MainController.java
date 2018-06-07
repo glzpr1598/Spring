@@ -25,6 +25,7 @@ public class MainController {
 	public HashMap<String, String> home() {
 		HashMap<String, String> map = new HashMap<>();
 		map.put("msg", "잘못된 요청입니다. 사용자 API를 참조하세요.");
+		map.put("test", "test");
 		return map;
 	}
 	
@@ -32,8 +33,9 @@ public class MainController {
 	// restful은 일반적으로 url 형태로 요청하기 때문에 데이터 조회에만 주로 사용한다.
 	@RequestMapping(value = "/listSub/{cntPerPage}/{page}")
 	public HashMap<String, Object> listSub(@PathVariable int cntPerPage, @PathVariable int page) {
-		HashMap<String, Object> map = new HashMap<>();
 		logger.info(cntPerPage + "/" + page);
+		
+		HashMap<String, Object> map = service.pagingList(page, cntPerPage);
 		
 		return map;
 	}
