@@ -1,7 +1,9 @@
 package com.file.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -25,9 +27,9 @@ public class HomeController {
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
 	@RequestMapping(value = "/")
-	public String home() {
-		logger.info("홈 요청");
-		return "home";
+	public ModelAndView list() {
+		logger.info("리스트 요청");
+		return service.list();
 	}
 	
 	@RequestMapping(value = "/writeForm")
@@ -58,21 +60,51 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/detail")
-	public ModelAndView detail() {
+	public ModelAndView detail(@RequestParam("idx") String idx) {
 		logger.info("상세보기 요청");
-		return null;
+		
+		return service.detail(idx);
 	}
 	
 	@RequestMapping(value = "/fileDel")
 	public @ResponseBody HashMap<String, Object> fileDel(@RequestParam("fileName") String fileName, HttpSession session) {
 		logger.info("파일 삭제 요청");
+		
 		String root = session.getServletContext().getRealPath("/");
 		return service.fileDel(root, fileName);
 	}
 	
 	@RequestMapping(value = "/download")
-	public void download() {
+	public void download(@RequestParam("file") String file, HttpSession session, HttpServletResponse response)  {
 		logger.info("다운로드 요청");
+		
+		String root = session.getServletContext().getRealPath("/");
+		try {
+			service.download(root, file, response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping(value = "/modifyForm")
+	public ModelAndView modifyForm(@RequestParam("idx") String idx) {
+		logger.info("수정 폼 요청");
+		
+		return service.modifyForm(idx);
+	}
+	
+	@RequestMapping(value = "modify")
+	public ModelAndView modify(@RequestParam HashMap<String, String> params) {
+		logger.info("수정 요청");
+		
+		return service.modify(params);
+	}
+	
+	@RequestMapping(value = "/delete")
+	public ModelAndView delete(@RequestParam("idx") String idx) {
+		logger.info("삭제 요청");
+		
+		return service.delete(idx);
 	}
 	
 }

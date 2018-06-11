@@ -4,15 +4,53 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">    
 <mapper namespace="com.file.dao.SqlInter">
 
+	<!-- 리스트 -->
+	<select id="list" resultType="BoardBean">
+		select * from bbs order by idx desc
+	</select>
+
+	<!-- 글 쓰기 -->
 	<insert id="write" parameterType="BoardBean"
 		useGeneratedKeys="true" keyProperty="idx" keyColumn="idx" >
 		insert into bbs(idx, user_name, subject, content, bHit)
 			VALUES(bbs_seq.NEXTVAL, #{user_name}, #{subject}, #{content}, 0)
 	</insert>
 	
+	<!-- 파일 쓰기 -->
 	<insert id="writeFile">
 		insert into files(fileIdx, oldFile, newFile, idx)
 			values(seq_files.NEXTVAL, #{param2}, #{param1}, #{param3})
 	</insert>
+	
+	<!-- 상세보기 -->
+	<select id="detail" resultType="BoardBean">
+		select * from bbs where idx = #{param1}
+	</select>
+	
+	<!-- 파일 목록 가져오기 -->
+	<select id="fileList" resultType="FileBean">
+		select * from files where idx = #{param1}
+	</select>
+	
+	<!-- 다운로드할 원본 파일명 가져오기 -->
+	<select id="downloadName" resultType="String">
+		select oldFile from files where newFile = #{param1}
+	</select>
+	
+	<!-- 수정하기 -->
+	<update id="modify" parameterType="HashMap">
+		update bbs set user_name=#{user_name}, subject=#{subject}, content=#{content}
+		where idx=#{idx}
+	</update>
+	
+	<!-- 파일 모두 지우기 -->
+	<delete id="deleteFile">
+		delete from files where idx=#{param1}
+	</delete>
+	
+	<!-- 글 지우기 -->
+	<delete id="delete">
+		delete from bbs where idx=#{param1}
+	</delete>
 
 </mapper>

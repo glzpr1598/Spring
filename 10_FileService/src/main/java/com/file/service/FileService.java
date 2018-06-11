@@ -2,10 +2,15 @@ package com.file.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
@@ -18,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.file.dao.SqlInter;
 import com.file.dto.BoardBean;
+import com.file.dto.FileBean;
 
 @Service
 public class FileService {
@@ -25,11 +31,24 @@ public class FileService {
 	@Autowired
 	SqlSession sqlSession;
 	SqlInter inter;
+
 	// 업로드할 파일명 리스트(new, old)
 	HashMap<String, String> fileList = new HashMap<>();
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	// 글 리스트
+	public ModelAndView list() {
+		ModelAndView mav = new ModelAndView();
+		inter = sqlSession.getMapper(SqlInter.class);
+
+		mav.addObject("list", inter.list());
+		mav.setViewName("list");
+		
+		return mav;
+	}
+
+	// 업로드
 	public ModelAndView upload(MultipartFile file, String root) {
 		ModelAndView mav = new ModelAndView();
 		String fullPath = root + "resources/upload/";
@@ -111,10 +130,110 @@ public class FileService {
 					inter.writeFile(key, fileList.get(key), bean.getIdx());
 				}
 			}
+			fileList.clear();
 		}
 		
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName(page);
+		return mav;
+	}
+
+	// 상세보기
+	public ModelAndView detail(String idx) {
+		ModelAndView mav = new ModelAndView();
+		inter = sqlSession.getMapper(SqlInter.class);
+		
+		// 글 정보
+		mav.addObject("dto", inter.detail(idx));
+		// 파일 정보
+		ArrayList<FileBean> fileList = inter.fileList(idx); 
+		mav.addObject("files", fileList);  // 파일 리스트
+		mav.addObject("size", fileList.size());  // 파일 개수
+		
+		mav.setViewName("detail");
+		return mav;
+	}
+
+	// 파일 다운로드
+	public void download(String root, String file, HttpServletResponse response) throws IOException {
+		String fullPath = root + "resources/upload/" + file;
+		
+		// 파일 가져오기
+		Path path = Paths.get(fullPath);
+		byte[] bytes = Files.readAllBytes(path);
+		
+		// 원본 파일명 가져오기
+		inter = sqlSession.getMapper(SqlInter.class);
+		String oldFile = inter.downloadName(file);
+		
+		// response 객체에 파일 담기
+		String downFile = URLEncoder.encode(oldFile, "UTF-8");  // 한글 처리
+		response.setContentType("application/octet-stream");
+		response.setHeader("content-Disposition", 
+				"attachment; filename=\""+downFile+"\"");
+		
+		// response 쓰기
+		OutputStream os = response.getOutputStream();
+		os.write(bytes);
+		
+		// 자원 반납
+		os.flush();
+		os.close();
+	}
+
+	// 수정 폼
+	public ModelAndView modifyForm(String idx) {
+		ModelAndView mav = new ModelAndView();
+		inter = sqlSession.getMapper(SqlInter.class);
+		
+		// fileList 가져오기
+		ArrayList<FileBean> list = inter.fileList(idx);
+		for(FileBean file: list) {
+			fileList.put(file.getNewFile(), file.getOldFile());
+		}
+		
+		mav.addObject("dto", inter.detail(idx));
+		mav.setViewName("modifyForm");
+		
+		return mav;
+	}
+
+	// 수정
+	public ModelAndView modify(HashMap<String, String> params) {
+		int idx = Integer.parseInt(params.get("idx")); 
+		inter = sqlSession.getMapper(SqlInter.class);
+		
+		// 글 수정
+		int success = inter.modify(params);
+		
+		// 기존 파일 모두 지우기
+		inter.deleteFile(idx);
+		
+		// 파일 쓰기
+		if (success > 0) {
+			if(fileList.size() > 0) {
+				for(String key: fileList.keySet()) {
+					inter.writeFile(key, fileList.get(key), idx);
+				}
+			}
+			fileList.clear();
+		}
+		
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("redirect:detail?idx="+idx);
+		return mav;
+	}
+
+	// 삭제
+	public ModelAndView delete(String idx) {
+		ModelAndView mav = new ModelAndView();
+		
+		// 글 삭제
+		inter.delete(idx);
+		// 파일 삭제
+		inter.deleteFile(Integer.parseInt(idx));
+		
+		mav.setViewName("redirect:/");
 		return mav;
 	}
 

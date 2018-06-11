@@ -1,5 +1,8 @@
 package com.file.dto;
 
+import org.apache.ibatis.type.Alias;
+
+@Alias("FileBean")
 public class FileBean {
 	
 	private int fileIdx;

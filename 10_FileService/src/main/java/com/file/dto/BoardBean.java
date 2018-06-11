@@ -22,6 +22,12 @@ public class BoardBean {
 		this.subject = subject;
 		this.content = content;
 	}
+	public BoardBean(int idx, String user_name, String subject, String content) {
+		this.idx = idx;
+		this.user_name = user_name;
+		this.subject = subject;
+		this.content = content;
+	}
 	// Getters, Setters
 	public int getIdx() {
 		return idx;

@@ -22,10 +22,11 @@
 	var filePath = "${path}";
 	// 경로가 있으면 이미지를 부모창으로 보냄
 	if(filePath != "") {
-		var content = "<img src='${path}' />";
+		var content = "<img src='${path}' width='300px' />";
 		content += "<input id='${path}' type='button' value='삭제' onclick='del(this)' />";
 		$("#editable", opener.document).append(content);
 		self.close();
-	}0
+	}
+	
 </script>
 </html>
