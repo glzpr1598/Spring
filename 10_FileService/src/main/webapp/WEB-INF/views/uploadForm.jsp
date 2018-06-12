@@ -5,6 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="resources/spring-icon.jpg">
 <title>파일 업로드</title>
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 <style></style>

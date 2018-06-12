@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -101,10 +102,10 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/delete")
-	public ModelAndView delete(@RequestParam("idx") String idx) {
+	public ModelAndView delete(@RequestParam("idx") String idx, HttpSession session) {
 		logger.info("삭제 요청");
-		
-		return service.delete(idx);
+		String root = session.getServletContext().getRealPath("/");
+		return service.delete(root, idx);
 	}
 	
 }

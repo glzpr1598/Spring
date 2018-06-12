@@ -5,7 +5,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<link rel="icon" href="resources/spring-icon.jpg">
+<title>글 상세보기</title>
 <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 <style>
 	table,th,td{
@@ -25,6 +26,10 @@
 <body>
 	<div id="container">
 		<table>
+			<tr>
+				<th>글번호</th>
+				<td>${dto.idx}</td>
+			</tr>
 			<tr>
 				<th>작성자</th>
 				<td>${dto.user_name}</td>

@@ -86,6 +86,7 @@ public class FileService {
 		return mav;
 	}
 
+	// 파일 삭제
 	public HashMap<String, Object> fileDel(String root, String fileName) {
 		HashMap<String, Object> map = new HashMap<>();
 		int success = 0;
@@ -109,6 +110,7 @@ public class FileService {
 		return map;
 	}
 
+	// 글쓰기
 	@Transactional
 	public ModelAndView write(HashMap<String, String> params) {
 		String page = "redirect:/writeForm";
@@ -187,6 +189,7 @@ public class FileService {
 		inter = sqlSession.getMapper(SqlInter.class);
 		
 		// fileList 가져오기
+		fileList.clear();
 		ArrayList<FileBean> list = inter.fileList(idx);
 		for(FileBean file: list) {
 			fileList.put(file.getNewFile(), file.getOldFile());
@@ -199,6 +202,7 @@ public class FileService {
 	}
 
 	// 수정
+	@Transactional
 	public ModelAndView modify(HashMap<String, String> params) {
 		int idx = Integer.parseInt(params.get("idx")); 
 		inter = sqlSession.getMapper(SqlInter.class);
@@ -206,11 +210,11 @@ public class FileService {
 		// 글 수정
 		int success = inter.modify(params);
 		
-		// 기존 파일 모두 지우기
-		inter.deleteFile(idx);
-		
-		// 파일 쓰기
 		if (success > 0) {
+			// 기존 파일 DB 모두 지우기
+			inter.deleteFile(idx);
+			
+			// 새로운 파일 DB 쓰기
 			if(fileList.size() > 0) {
 				for(String key: fileList.keySet()) {
 					inter.writeFile(key, fileList.get(key), idx);
@@ -225,12 +229,28 @@ public class FileService {
 	}
 
 	// 삭제
-	public ModelAndView delete(String idx) {
+	public ModelAndView delete(String root, String idx) {
 		ModelAndView mav = new ModelAndView();
+		
+		// 실제 파일 삭제
+		ArrayList<FileBean> fileList = inter.fileList(idx);
+		for (FileBean temp: fileList) {
+			String fileName = temp.getNewFile();
+			String fullPath = root+"resources/upload/"+fileName;
+			File file = new File(fullPath);
+			
+			if(file.exists()) {
+				file.delete();
+				logger.info("삭제 완료");
+			} else {
+				logger.info("이미 삭제된 사진");
+			}
+		}
 		
 		// 글 삭제
 		inter.delete(idx);
-		// 파일 삭제
+		
+		// 파일 DB 삭제
 		inter.deleteFile(Integer.parseInt(idx));
 		
 		mav.setViewName("redirect:/");
